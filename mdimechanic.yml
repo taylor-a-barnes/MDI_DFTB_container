@@ -1,0 +1,21 @@
+code_name: 'dftb'
+docker:
+  image_name: 'mdi/dftb'
+
+  build_image:
+    - apt-get clean
+    - apt-get update --fix-missing
+    - apt-get install -y git cmake wget vim
+
+  build_engine:
+    - echo "Insert commands to build your engine code here"
+
+  validate_engine:
+    - echo "Insert code that will confirm that your code has been built successfully"
+    - exit 1
+
+engine_tests:
+  # Provide at least one example input that can be used to test your code's MDI functionality
+  script:
+    - echo "Insert commands to run an example calculation here"
+    - exit 1
