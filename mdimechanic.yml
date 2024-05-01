@@ -31,12 +31,12 @@ docker:
     - echo "export OMP_NUM_THREADS=1" >> ~/.bashrc
     
     # Set umask 000
-    - echo "export umask 000" >> ~/.profile
-    - echo "export umask 000" >> ~/.bashrc
+    - echo "umask 000" >> ~/.profile
+    - echo "umask 000" >> ~/.bashrc
 
   build_engine:
     - |
-      if [ ! -d "build/dftfe" ]; then
+      if [ ! -d "build/dftbplus" ]; then
         git clone https://github.com/dftbplus/dftbplus.git build/dftbplus
         cd build/dftbplus
         ./utils/get_opt_externals
