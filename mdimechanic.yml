@@ -1,14 +1,40 @@
-code_name: 'dftb'
+code_name: 'dftbplus'
 docker:
-  image_name: 'mdi/dftb'
+  image_name: 'mdi/dftbplus'
 
   build_image:
     - apt-get clean
     - apt-get update --fix-missing
     - apt-get install -y git cmake wget vim
+    - apt-get install -y libblas-dev liblapack-dev
+    
+    - mkdir /dependencies
+    - cd /dependencies
+    - wget https://github.com/Reference-ScaLAPACK/scalapack/archive/refs/tags/v2.2.0.tar.gz
+    - tar -xf v2.2.0.tar.gz
+    - cd scalapack-2.2.0
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=/dependencies/scalapack -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DBUILD_TESTING=OFF -DCMAKE_C_COMPILER=mpicc -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_Fortran_FLAGS="-fPIC -fallow-argument-mismatch" ..
+    - make
+    - make install
+    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.profile
+    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.bashrc
 
   build_engine:
-    - echo "Insert commands to build your engine code here"
+    - |
+      if [ ! -d "build/dftfe" ]; then
+        git clone https://github.com/dftbplus/dftbplus.git build/dftbplus
+        cd build/dftbplus
+        ./utils/get_opt_externals
+        cd /repo
+      fi
+    - cd build/dftbplus
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=/repo/build/opt/dftb+ ..
+    - make
+    - make install
 
   validate_engine:
     - echo "Insert code that will confirm that your code has been built successfully"
