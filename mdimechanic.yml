@@ -19,12 +19,20 @@ docker:
     - cmake -DCMAKE_INSTALL_PREFIX=/dependencies/scalapack -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF -DBUILD_TESTING=OFF -DCMAKE_C_COMPILER=mpicc -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_Fortran_FLAGS="-fPIC -fallow-argument-mismatch" ..
     - make
     - make install
-    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.profile
-    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.bashrc
-    
+    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack/lib" >> ~/.profile
+    - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack/lib" >> ~/.bashrc
+
     # Export location where the DFTB+ executable will be compiled
     - echo "export PATH=${PATH}:/repo/build/opt/dftb+/bin" >> ~/.profile
     - echo "export PATH=${PATH}:/repo/build/opt/dftb+/bin" >> ~/.bashrc
+
+    # Default to 1 OpenMP thread
+    - echo "export OMP_NUM_THREADS=1" >> ~/.profile
+    - echo "export OMP_NUM_THREADS=1" >> ~/.bashrc
+    
+    # Set umask 000
+    - echo "export umask 000" >> ~/.profile
+    - echo "export umask 000" >> ~/.bashrc
 
   build_engine:
     - |
@@ -37,7 +45,7 @@ docker:
     - cd build/dftbplus
     - mkdir build
     - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=/repo/build/opt/dftb+ ..
+    - cmake -DCMAKE_INSTALL_PREFIX=/repo/build/opt/dftb+ -DWITH_MPI=YES -DSCALAPACK_LIBRARY=/dependencies/scalapack/lib/libscalapack.so ..
     - make
     - make install
 
