@@ -7,8 +7,9 @@ docker:
     - apt-get update --fix-missing
     - apt-get install -y git cmake wget vim
     - apt-get install -y libblas-dev liblapack-dev
-    
     - mkdir /dependencies
+    
+    # Build Scalapack
     - cd /dependencies
     - wget https://github.com/Reference-ScaLAPACK/scalapack/archive/refs/tags/v2.2.0.tar.gz
     - tar -xf v2.2.0.tar.gz
@@ -20,6 +21,10 @@ docker:
     - make install
     - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.profile
     - echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/dependencies/scalapack" >> ~/.bashrc
+    
+    # Export location where the DFTB+ executable will be compiled
+    - echo "export PATH=${PATH}:/repo/build/opt/dftb+/bin" >> ~/.profile
+    - echo "export PATH=${PATH}:/repo/build/opt/dftb+/bin" >> ~/.bashrc
 
   build_engine:
     - |
@@ -37,8 +42,8 @@ docker:
     - make install
 
   validate_engine:
-    - echo "Insert code that will confirm that your code has been built successfully"
-    - exit 1
+    - cd /tests/water
+    - dftb+
 
 engine_tests:
   # Provide at least one example input that can be used to test your code's MDI functionality
